@@ -1,4 +1,4 @@
-# jhc-libopencm3-template
+# jhc-libopencm3
 Haskell module for using libopencm3 from haskell(jhc), stm32f103 blackpill as default
 
 ## Dependence
