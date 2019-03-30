@@ -10,9 +10,9 @@ import           System.Directory
 import           System.Process
 
 projname = "main"
-projsrc pwd = pwd ++ "/" ++ "my-project"
+projsrc pwd = pwd -- ++ "/" ++ "my-project"
 
-hsSrcDir pwd = projsrc pwd ++  "/hs_src"
+hsSrcDir pwd = projsrc pwd -- ++  "/hs_src"
 hsFiles pwd = hsSrcDir pwd ++ "/Main.hs"
 
 libDir pwd = projsrc pwd ++  "/lib"
@@ -22,12 +22,13 @@ chip = "STM32F1"
 
 jhcrts pwd = projsrc pwd  ++ "/" ++ "jhc_custom"
 
-opencm3_dir pwd = pwd ++ "/libopencm3"
+opencm3_dir pwd = libDir pwd ++ "/libopencm3"
 
 target = "arm-none-eabi"
 -- cc = "clang -target" +++ target
 cc = target ++ "-gcc"
-cpp = "clang++ -target" +++ target
+-- cpp = "clang++ -target" +++ target
+cpp = target ++ "-g++"
 ld = target ++ "-gcc"
 objcopy = target ++ "-objcopy"
 objdump = target ++ "-objdump"
