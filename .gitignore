@@ -1,0 +1,15 @@
+/a.out
+
+*.o
+
+*.ld
+
+/my-project/hs_main.c
+
+/my-project/jhc_custom/*
+
+/my-project/hs_src/*
+
+**.*~
+
+**\#
