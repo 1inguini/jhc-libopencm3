@@ -15,7 +15,7 @@ projsrc pwd = pwd -- ++ "/" ++ "my-project"
 hsSrcDir pwd = projsrc pwd -- ++  "/hs_src"
 hsFiles pwd = hsSrcDir pwd ++ "/Main.hs"
 
-libDir pwd = projsrc pwd ++  "/lib"
+libDir pwd = projsrc pwd ++  "/Lib"
 
 device = "stm32f103cbt6"
 chip = "STM32F1"
@@ -121,7 +121,7 @@ hsMainC pwd = do
   putStr "hsMainC done\n"
   return [out]
   where
-    out   = projsrc pwd ++ "/hs_main.c"
+    out   = jhcrts pwd ++ "/hs_main.c"
     input = hsFiles pwd
 
 
@@ -140,7 +140,7 @@ ldScript pwd = do
   putStr "ldScript was called\n"
   archflags <- archflags pwd
   callCommand
-    ("make -C" +++ projsrc pwd ++ "/../" +++
+    ("make -C" +++ libDir pwd +++
      "DEVICE=\"" ++ device ++ "\"" +++
      "ARCHFLAGS=\"" ++ archflags ++ "\"" +++
      "OPENCM3_DIR=\"" ++ opencm3_dir pwd ++ "\"" +++
@@ -149,14 +149,14 @@ ldScript pwd = do
   putStr "ldScript done\n"
   return [out]
     where
-      out = pwd ++ "/generated." ++ device ++ ".ld"
+      out = libDir pwd ++ "/generated." ++ device ++ ".ld"
 
 
 options :: FilePath -> IO String
 options pwd = do
   [hsMain] <- hsMainC pwd
   gsub
-    ("-o" +++ projsrc pwd ++ "/hs_main.c")
+    ("-o" +++ jhcrts pwd ++ "/hs_main.c")
     ""
     . drop 28
     . init . init
@@ -170,9 +170,10 @@ cToO pwd = do
   cflags <- cflags pwd
   options <- options pwd
   -- removeImportStd pwd
-  cFiles  <- listToString " "
+  cFiles  <- (\files -> libDir pwd ++ "/mylib.c" +++ files)
+             . listToString " "
              . words
-             <$> readProcess "find" [projsrc pwd, "-name", "*.c"] []
+             <$> readProcess "find" [jhcrts pwd, "-name", "*.c"] []
   callCommand
     (cc +++ cFiles +++ options +++ cflags +++ "-I" ++ libDir pwd +++ "-c")
   putStr "cToO done\n"
@@ -196,39 +197,6 @@ link pwd = do
      "-L" ++ opencm3_dir pwd ++ "/lib" +++ ldLib +++
      libDeps)
   return []
-
-
-proj :: FilePath -> IO [FilePath]
-proj pwd = do
-  putStr "proj was called\n"
-  cflags <- cflags pwd
-  -- archive <- libjhcrtsA pwd
-  [ld]   <- ldScript pwd
-  -- cFiles  <- readProcess "fish" ["-c","ls " ++ projsrc pwd ++ "/src/**.c"] []
-  cFiles <- words
-            <$> readProcess "find" [libDir pwd ,"-name", "*.c"] []
-
-  callCommand
-    (cc +++ cflags +++ "-o" +++ outElf +++
-      listToString " " cFiles +++
-      -- listToString " " archive +++
-      projsrc pwd ++ "/hs_main.c" +++
-      "-T" ++ ld +++
-      "-D" ++ chip)
-
-  callCommand $ objcopy +++ "-O ihex" +++ outElf +++ outHex
-  callCommand $ objcopy +++ "-O binary" +++ outElf +++ outBin
-  callCommand $ objcopy +++ "-St" +++ outElf +++ ">" ++ outLst
-  callCommand $ size +++ outElf
-
-  putStr "proj done\n"
-  return $ ld:outElf:outHex:outBin:[outLst]-- :(archive ++ words cFiles)
-  where
-    outElf = projname ++ ".elf"
-    outHex = projname ++ ".hex"
-    outBin = projname ++ ".bin"
-    outLst = projname ++ ".lst"
-
 
 clean :: [FilePath] -> FilePath -> IO()
 clean generatedBins pwd = do
