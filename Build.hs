@@ -241,12 +241,11 @@ clean generatedBins pwd = do
 main :: IO ()
 main = do
   pwd <- getCurrentDirectory
-  putStr pwd
   -- _             <- hsMainC pwd
   -- generatedBins <- proj pwd
   -- print =<< options pwd
   -- preProc pwd
-  -- link pwd
+  link pwd
 
   -- clean generatedBins
   -- generatedBins <- jhcRtsObjects (projsrc pwd)
