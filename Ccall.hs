@@ -1,4 +1,4 @@
-module Ccall where
+module Lib.Ccall where
 
 import           Data.Word
 
