@@ -125,16 +125,6 @@ hsMainC pwd = do
     input = hsFiles pwd
 
 
--- preProc pwd = do
---   cflags <- cflags pwd
---   options <- options pwd
---   callCommand
---     (cc +++ input +++ options +++ cflags +++ "-I" ++ projsrc pwd ++ "/src -E >" +++ "/tmp/preproc.c")
---   removeFile input
---   copyFile "/tmp/preproc.c" input
---   where
---     input = projsrc pwd ++ "/hs_main.c"
-
 ldScript :: FilePath -> IO [FilePath]
 ldScript pwd = do
   putStr "ldScript was called\n"
