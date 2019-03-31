@@ -117,7 +117,7 @@ hsMainC :: FilePath -> IO [FilePath]
 hsMainC pwd = do
   putStr "hsMainC was called\n"
   callCommand
-    ("jhc -v -fffi --tdir=" ++ jhcrts pwd +++ "-C --include=" ++ hsSrcDir pwd +++ "-o" +++ out +++ input)
+    ("jhc -v -fffi --tdir=" ++ jhcrts pwd +++ "-C -o" +++ out +++ input)
   putStr "hsMainC done\n"
   return [out]
   where
