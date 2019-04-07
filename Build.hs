@@ -25,10 +25,10 @@ jhcrts pwd = projsrc pwd  ++ "/" ++ "jhc_custom"
 opencm3_dir pwd = libDir pwd ++ "/libopencm3"
 
 target = "arm-none-eabi"
--- cc = "clang -target" +++ target
-cc = target ++ "-gcc"
--- cpp = "clang++ -target" +++ target
-cpp = target ++ "-g++"
+cc = "clang -I/usr/arm-none-eabi/include -target" +++ target
+-- cc = target ++ "-gcc"
+cpp = "clang++ -I/usr/arm-none-eabi/include -target" +++ target
+-- cpp = target ++ "-g++"
 ld = target ++ "-gcc"
 objcopy = target ++ "-objcopy"
 objdump = target ++ "-objdump"
@@ -74,7 +74,7 @@ cflags pwd = do
   family <- genlink "FAMiLY" pwd
   return (arch +++
           cpp +++
-          "-g -O0 -Wall -v \
+           "-g -O3 -Wall -v \
           \-fno-common -ffunction-sections -fdata-sections -ffreestanding" +++
            "-nostdlib -nostartfiles" +++
            -- "-L" ++ opencm3_dir pwd ++ "/lib" +++ "-lopencm3_" ++  family +++
@@ -135,7 +135,9 @@ ldScript pwd = do
      "ARCHFLAGS=\"" ++ archflags ++ "\"" +++
      "OPENCM3_DIR=\"" ++ opencm3_dir pwd ++ "\"" +++
      "CPP=\"" ++ cc ++ "\"")
-
+  -- temp <-  gsub "128K" "108K" <$> gsub "0x08000000" "0x08005000" <$> readFile out
+  -- removeFile out
+  -- writeFile out temp
   putStr "ldScript done\n"
   return [out]
     where
