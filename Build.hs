@@ -94,6 +94,10 @@ cflags pwd = do
            \-D_JHC_JGC_GC_STACK_SHIFT=8 -D_JHC_JGC_LIMITED_NUM_GC_STACK=20 \
            \-D_JHC_JGC_NAIVEGC -D_JHC_JGC_SAVING_MALLOC_HEAP")
 
+genCcall pwd =
+  callCommand ("stack runghc" +++ libDir pwd ++ "/GenCcall.hs" +++ out)
+  where
+    out = libDir pwd ++ "/Ccall.hs"
 
 listToString seperator =
   foldl1 (\words word -> word ++  seperator ++ words)
